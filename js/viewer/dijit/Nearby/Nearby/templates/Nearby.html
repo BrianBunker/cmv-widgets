@@ -1,0 +1,33 @@
+<div>
+    <div data-dojo-attach-point="nearbyParametersNode">
+        <div>Set nearby area:</div>
+        <div>
+            <input type="radio" data-dojo-type="dijit/form/RadioButton" name="nearbyMode" id="nearbyModeDistance" value="nearbyMode_Distance" checked="true" data-dojo-attach-point="nearbyModeDistance" />
+            <label for="nearbyModeDistance">Distance (straight line)</label>
+            <input type="radio" class="padLeft" data-dojo-type="dijit/form/RadioButton" name="nearbyMode" id="nearbyModeDriveTime" value="nearbyMode_DriveTime" data-dojo-attach-point="nearbyModeDriveTime" />
+            <label for="nearbyModeDriveTime">Drive Time</label>
+        </div>
+        <div class="padTop">
+            <input type="text" class="nearbyValueInput" id="nearbyValueInput" data-dojo-attach-point="nearbyValueInput" data-dojo-type="dijit/form/NumberTextBox" value="50" name="nearbyValueInput" data-dojo-props="constraints:{min:0,max:999},invalidMessage:'Please enter a numeric value.'" />
+            <span data-dojo-attach-point="nearbyModeDistanceSpan">
+                <select data-dojo-type="dijit/form/Select" data-dojo-attach-point="nearbyModeDistance_options">
+                    <option selected="selected" value="MILES">mi</option>
+                    <option value="KILOMETERS">km</option>
+                </select>
+            </span>
+            <label class="off" data-dojo-attach-point="nearbyModeDriveTime_label" for="nearbyValueInput">Minutes</label>
+        </div>
+        <div>Summarize features from:</div>
+        <div>
+            <select data-dojo-attach-point="nearbyFeaturesSelect" data-dojo-type="dijit/form/Select"></select>
+        </div>
+        <div>
+            <button data-dojo-attach-point="dropPointButton" class="dropButton padTop" data-dojo-type="dijit/form/Button">Ready to drop point!</button>
+            <button data-dojo-attach-point="clearDropButton" class="off padTop" data-dojo-type="dijit/form/Button">Clear dropped point</button>
+        </div>
+    </div>
+    <div data-dojo-attach-point="nearbyResultsNode" class="resultsContainer"></div>
+    <div data-dojo-attach-point="nearbyResultsGrid" class="resultsGrid off">
+        <span class="undockButton" data-dojo-attach-event="click:undockResultsGrid"></span>
+    </div>
+</div>

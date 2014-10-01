@@ -1,0 +1,50 @@
+.esri-DroppedItem {
+	border: 1px solid #666666;
+	margin: 2px;
+	padding: 4px;
+}
+
+.esri-DroppedItem .iconNode {
+	width: 32px;
+	height: 32px;
+	display: inline-block;
+	float: left;
+}
+
+.esri-DroppedItem .labelNode {
+	display: inline-block;
+	line-height: 32px;
+	float: left;
+	overflow-x: hidden;
+	text-overflow: ellipsis;
+}
+
+.esri-DroppedItem .removeNode {
+	display: inline-block;
+	float: right;
+	cursor: pointer;
+}
+
+.esri-DroppedItem .labelNode .sub-label {
+	font-size: 80%;
+	color: #777;
+}
+
+.esri-DroppedItem .containerNode {
+	padding-left: 35px;
+	max-height: 250px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.esri-DroppedItem .clearer {
+	clear: both;
+}
+
+.esri-DroppedItem .layerTitle {
+	font-style: oblique;
+}
+
+.esri-DroppedItem .layerInfo {
+	padding-left: 5px;
+}

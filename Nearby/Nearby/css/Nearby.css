@@ -1,0 +1,126 @@
+.gis_NearbyDijit .off {
+	display: none;
+}
+
+.gis_NearbyDijit .padTop {
+	margin-top: 5px;
+}
+
+.gis_NearbyDijit .padLeft {
+	margin-left: 15px;
+}
+
+.gis_NearbyDijit .dijitButton {
+	margin-left: 0;
+}
+
+.gis_NearbyDijit .nearbyValueInput {
+	width: 30px;
+}
+
+.gis_NearbyDijit .resultsContainer {
+	font-weight: bold;
+	margin: 10px;
+}
+
+.gis_NearbyDijit .loading {
+	display: inline-block;
+	height: 20px;
+	width: 20px;
+}
+
+.resultsGrid {
+	position: relative;
+}
+
+.nearbyNonModal {
+	width: 600px;
+}
+
+.nearbyNonModal .dockButton {
+	display: inline-block;
+	height: 15px;
+	width: 15px;
+	background-image: url('../images/dock.png');
+	background-size: 100%;
+	cursor: pointer;
+	float: right;
+	margin-top: 7px;
+	margin-right: 7px;
+}
+
+.resultsGrid .undockButton {
+	display: inline-block;
+	height: 15px;
+	width: 15px;
+	background-image: url('../images/undock.png');
+	background-size: 100%;
+	cursor: pointer;
+	margin-top: 7px;
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 1000;
+}
+
+.resultsGrid .dgrid {
+	height: 240px;
+	width:100%;
+	overflow: auto;
+}
+.nearbyNonModal .dgrid {
+	height: 335px;
+	width:100%;
+	overflow: auto;
+}
+
+.resultsGrid .dgrid .dgrid-scroller,
+.nearbyNonModal .dgrid .dgrid-scroller {
+	margin-top: 56px !important;
+}
+
+.resultsGrid .dgrid .dgrid-header th,
+.nearbyNonModal .dgrid .dgrid-header th {
+	font-weight: bold;
+}
+
+.resultsGrid .dgrid .dgrid-cell,
+.nearbyNonModal .dgrid .dgrid-cell {
+	font-size: 11px;
+	padding: 8px;
+	cursor: pointer;
+	width: 88px;
+}
+
+.resultsGrid .dgrid .dgrid-column-Descrip,
+.resultsGrid .dgrid .dgrid-column-NewsLink,
+.nearbyNonModal .dgrid .dgrid-column-Descrip,
+.nearbyNonModal .dgrid .dgrid-column-NewsLink {
+	width: 300px;
+}
+
+.resultsGrid .dgrid .dgrid-row,
+.nearbyNonModal .dgrid .dgrid-row {
+	border: none;
+}
+
+.resultsGrid .dgrid .dgrid-cell,
+.nearbyNonModal .dgrid .dgrid-cell {
+	border-color: #ddd;
+	border-style: solid;
+	border-width: 0 1px 1px 0;
+}
+
+.resultsGrid .dgrid .dgrid-row-odd .dgrid-cell,
+.nearbyNonModal .dgrid .dgrid-row-odd .dgrid-cell {
+	background-color: #eee;
+}
+
+.resultsGrid .dgrid .dgrid-selected .dgrid-cell,
+.nearbyNonModal .dgrid .dgrid-selected .dgrid-cell {
+	background-color: #049cdb;
+}
+
+.nearbyNonModal_underlay {
+	display: none;
+}

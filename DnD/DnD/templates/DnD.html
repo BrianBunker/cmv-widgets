@@ -1,0 +1,13 @@
+<div>
+	<div class="instructions" data-dojo-attach-point="instructionsNode">Drag-and-drop CSV files, shapefiles, or service urls here or onto the map</div>
+	<div class="alert-info off" data-dojo-attach-point="dndWarningDiv">
+	The browser you are using does not support drag-and-drop functionality. Try newer versions of Chrome or Firefox if possible.
+	</div>
+	<div data-dojo-attach-point="containerNode"></div>
+	<div data-dojo-attach-point="manualResourceAdd" class="manualResourceAdd">
+		<input data-dojo-attach-point="fileInputNode" class="fileInput" type="file" accept=".zip,.csv" />
+		or Service url
+		<input data-dojo-attach-point="serviceUrlInputNode" class="serviceUrlInput" type="text" />
+		<button data-dojo-attach-point="manualAddButton">Add</button>
+	</div>
+</div>

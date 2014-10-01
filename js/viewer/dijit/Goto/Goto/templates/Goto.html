@@ -1,0 +1,17 @@
+<div>
+  <div>
+    <select data-dojo-type="dijit/form/Select" data-dojo-attach-point="gotoTypeSelect">
+      <option selected="selected" value="latlon">Longitude/Latitude</option>
+      <option value="utm">UTM</option>
+      <option value="mgrs">MGRS</option>
+    </select>
+  </div>
+  <div>
+    <input type="text" data-dojo-type="dijit.form.TextBox" data-dojo-attach-point="coordinateTextBox" data-dojo-props="trim:true,required:true,value:'',placeholder:'Enter coordinate',class:'searchText'" />
+    <button data-dojo-attach-point="goButton" class="" data-dojo-type="dijit/form/Button">Go!</button>
+  </div>
+  <div>
+    <span class="coordinateHint" data-dojo-attach-point="coordinateHintNode">Longitude/Latitude -100.1234 30.1234</span>
+    <div class="questionIcon" data-dojo-attach-point="questionIconNode"></div>
+  </div>
+</div>

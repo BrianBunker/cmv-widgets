@@ -1,0 +1,5 @@
+Src,Eqid,Version,Datetime,Lat,Lon,Magnitude,Depth,NST,Region
+ak,10333559,1,"Wednesday, October 12, 2011 16:58:42 UTC",58.8078,-152.1652,2.3,31.00,12,"Kodiak Island region, Alaska"
+se,101211e,A,"Wednesday, October 12, 2011 16:40:00 UTC",37.9411,-77.9807,2.6,3.80,15,"Virginia"
+nn,00351018,8,"Wednesday, October 12, 2011 16:24:58 UTC",36.0833,-114.7633,2.0,5.20,17,"Nevada"
+nm,101211d,A,"Wednesday, October 12, 2011 16:18:53 UTC",35.3574,-92.2537,2.1,3.60,11,"Arkansas"
