@@ -2,6 +2,8 @@
 
 Widgets created for [cmv/cmv-app](https://github.com/cmv/cmv-app).
 
+[See them live!](http://brianbunker.github.io/cmv-widgets/)
+
 ## Widgets
 
 | Widget | Description |
