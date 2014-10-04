@@ -319,6 +319,16 @@ define([
         path: 'gis/dijit/Help',
         title: 'Help',
         options: {}
+      },
+      navhash: {
+        include: true,
+        id: 'navhash',
+        type: 'floating',
+        path: 'viewer/dijit/MapNavigationHash/MapNavigationHash',
+        title: 'Map Navigation Hash',
+        options: {
+          map: true
+        }
       }
 
     }
