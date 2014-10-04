@@ -323,7 +323,7 @@ define([
       navhash: {
         include: true,
         id: 'navhash',
-        type: 'floating',
+        type: 'invisible',
         path: 'viewer/dijit/MapNavigationHash/MapNavigationHash',
         title: 'Map Navigation Hash',
         options: {
