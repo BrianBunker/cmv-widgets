@@ -63,8 +63,8 @@ define([
 
     // Properties to be sent into constructor
     //list of lat and lon field strings
-    latFieldStrings: ['lat', 'latitude', 'y', 'ycenter'],
-    longFieldStrings: ['lon', 'long', 'longitude', 'x', 'xcenter'],
+    latFieldStrings: ['lat', 'latitude', 'y', 'ycenter', 'point_y'],
+    longFieldStrings: ['lon', 'long', 'longitude', 'x', 'xcenter', 'point_x'],
     iconSize: 23,
     showManualAdd: true,
     postCreate: function() {
