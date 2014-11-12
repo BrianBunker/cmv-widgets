@@ -223,7 +223,7 @@ define([
           this.droppedItems[itemId].startup();
           // load the resource
           this.handleImage(file, xPos, yPos, itemId);
-        } else if (file.name.indexOf('.csv') !== -1) {
+        } else if (file.name.toLowerCase().indexOf('.csv') !== -1) {
           if (this.droppedItems[file.name]) {
             return;
           }
@@ -237,7 +237,7 @@ define([
           this.droppedItems[file.name].startup();
           // load the resource
           this.handleCSV(file);
-        } else if (file.name.indexOf('.zip') !== -1) {
+        } else if (file.name.toLowerCase().indexOf('.zip') !== -1) {
           if (this.droppedItems[file.name]) {
             return;
           }
