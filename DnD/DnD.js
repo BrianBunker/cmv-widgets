@@ -575,8 +575,15 @@ define([
             if (isNaN(latitude) || isNaN(longitude)) {
               return;
             }
-
-            var geometry = webMercatorUtils.geographicToWebMercator(new Point(longitude, latitude));
+            
+            //use WKID of basemap or convert to Web Mercator 
+            if (this.map.spatialReference.wkid !== 4326) {
+                var geometry = new Point(longitude, latitude); 
+            } else {
+                var geometry = webMercatorUtils.geographicToWebMercator(new Point(longitude, latitude));
+            }
+            
+            
             var feature = {
               'geometry': geometry.toJson(),
               'attributes': attributes
