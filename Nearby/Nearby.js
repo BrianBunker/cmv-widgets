@@ -5,6 +5,7 @@ define([
     'dojo/_base/declare',
     'dojo/_base/lang',
     'dojo/_base/array',
+    'dojo/topic',
 
     'put-selector',
 
@@ -69,7 +70,7 @@ define([
     'dojo/NodeList-dom'
 ], function(
     require,
-    declare, lang, array,
+    declare, lang, array, topic,
     put,
     _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin,
     _SelectionLayersMixin,
@@ -197,9 +198,17 @@ define([
                 this.featureSelectionLayer.clearSelection();
             }
         },
+        
+        disconnectMapClick: function () {
+            topic.publish('mapClickMode/setCurrent', 'draw');
+        },
+        
+        connectMapClick: function () {
+            topic.publish('mapClickMode/setDefault');
+        },
 
         activateMapPointDrop: function(evt) {
-            this.mapClickMode.current = 'draw';
+            this.disconnectMapClick();
             this.clearResults();
             this.dropPointButton.set('label', 'Waiting for point drop');
             this.dropPointButton.set('disabled', true);
@@ -207,7 +216,7 @@ define([
         },
 
         handleDrawEnd: function(evt) {
-            this.mapClickMode.current = this.mapClickMode.defaultMode;
+            this.connectMapClick();
             this.droppedPoint = evt;
             this.drawTool.deactivate();
             this.showPoint(this.droppedPoint.geometry);
