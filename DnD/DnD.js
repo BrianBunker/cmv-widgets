@@ -451,7 +451,7 @@ define([
 
       //use the rest generate operation to generate a feature collection from the zipped shapefile
       request({
-        url: 'http://www.arcgis.com/sharing/rest/content/features/generate',
+        url: '//www.arcgis.com/sharing/rest/content/features/generate',
         content: myContent,
         form: formData,
         handleAs: 'json'
