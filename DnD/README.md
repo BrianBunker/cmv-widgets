@@ -18,6 +18,7 @@ dnd: {
 ```
 Available drag-and-drop sources:
 - CSV
+- KML
 - Shapefile (see [Best Practices](http://doc.arcgis.com/en/arcgis-online/reference/shapefiles.htm#ESRI_SECTION2_913CE2DFA59845C2926B2842F3AB8D66), adapted from [Add shapefile](https://developers.arcgis.com/javascript/jssamples/portal_addshapefile.html) sample)
 - Image
 - Text (highlight url and drag-and-drop)
@@ -31,7 +32,7 @@ Note: doesn't currently support DnD of FeatureServer root directory text (http:/
 
 [Click for demo](http://brianbunker.github.com/dojo-esri-dnd-widget)
 
-[Download demo csv, shapefiles, and image](./sampledata)
+[Download demo csv, kml, shapefiles, and image](./sampledata)
 
 Screen from Sample page:
 
