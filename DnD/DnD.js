@@ -3,6 +3,7 @@ define([
     'esri/request',
     'esri/graphic',
     'esri/InfoTemplate',
+    'esri/dijit/PopupTemplate',
     'esri/urlUtils',
     'esri/Color',
     'esri/geometry/Point',
@@ -19,6 +20,7 @@ define([
     'dojo/_base/array',
     'dojo/_base/declare',
     'dojo/_base/lang',
+    'dojo/topic',
     'dojo/on',
     'dojox/data/CsvStore',
     'dojox/encoding/base64',
@@ -30,13 +32,12 @@ define([
     'xstyle/css!./DnD/css/DnD.css'
 ], function (
         put,
-        request, Graphic, InfoTemplate, urlUtils, Color,
+        request, Graphic, InfoTemplate, PopupTemplate, urlUtils, Color,
         Point, Multipoint, webMercatorUtils, scaleUtils,
         ArcGISDynamicMapServiceLayer, ArcGISImageServiceLayer, FeatureLayer,
         PictureMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol,
         SimpleRenderer,
-        array, declare, lang,
-        on,
+        array, declare, lang, topic, on,
         CsvStore, base64,
         _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin,
         template,
@@ -212,6 +213,20 @@ define([
                     this.droppedItems[itemId].startup();
                     // load the resource
                     this.handleImage(file, xPos, yPos, itemId);
+                } else if (file.name.indexOf('.kml') !== -1) {
+                    if (this.droppedItems[file.name]) {
+                        return;
+                    }
+                    // create an entry in the DnD widget UI
+                    this.droppedItems[file.name] = new DroppedItem({
+                        map: this.map,
+                        label: file.name,
+                        itemId: file.name,
+                        removeCallback: lang.hitch(this, 'removeDroppedItem')
+                    }).placeAt(this.containerNode);
+                    this.droppedItems[file.name].startup();
+                    // load the resource
+                    this.handleKML(file);
                 } else if (file.name.indexOf('.csv') !== -1) {
                     if (this.droppedItems[file.name]) {
                         return;
@@ -360,6 +375,7 @@ define([
                 id: url
             });
             this.map.addLayer(layer);
+            this.addLayerToLayerControl(layer, url);
             return layer;
         },
         handleFeatureLayer: function (url) {
@@ -370,6 +386,7 @@ define([
                 id: url
             });
             this.map.addLayer(layer);
+            this.addLayerToLayerControl(layer, url);
             return layer;
         },
         handleImageService: function (url) {
@@ -378,6 +395,7 @@ define([
                 id: url
             });
             this.map.addLayer(layer);
+            this.addLayerToLayerControl(layer, url);
             return layer;
         },
         handleCSV: function (file) {
@@ -393,6 +411,24 @@ define([
                 };
                 reader.readAsText(file);
             }
+        },
+        handleKML: function (file) {
+            var reader = new FileReader();
+            reader.onload = lang.hitch(this, function () {
+                request({
+                    url: 'https://utility.arcgis.com/sharing/kml',
+                    content: {
+                        kmlString: encodeURIComponent(reader.result),
+                        'outSR': this.map.spatialReference.wkid
+                    },
+                    handleAs: 'json'
+                }).then(
+                    lang.hitch(this, 'kmlResult', file),
+                    lang.hitch(this, 'kmlFailure', file)
+                );
+            });
+            reader.onprogress = function () {};
+            reader.readAsText(file);
         },
         handleZip: function (file) {
             var fileName = file.name;
@@ -441,6 +477,58 @@ define([
                     lang.hitch(this, 'shapefileFailure', file)
                     );
         },
+        kmlResult: function (file, response) {
+            if (!response || response.error) {
+                this.droppedItems[file.name]._handleErrBack();
+                return;
+            }
+            this.addKMLToMap(file, response.featureCollection);
+
+        },
+        kmlFailure: function (file) {
+            this.droppedItems[file.name]._handleErrBack();
+        },
+        addKMLToMap: function (file, featureCollection) {
+            var fullExtent;
+            var layers = [];
+            var layerIds = [];
+            array.forEach(featureCollection.layers, lang.hitch(this, function (layer) {
+                var featureSet = layer.featureSet;
+                if (featureSet && featureSet.features && featureSet.features.length > 0) {
+                    var infoTemplate = new PopupTemplate(layer.popupInfo);
+                    var layerId = 'kml_' + file.name + '_' + Math.random();
+                    var featureLayer = new FeatureLayer(layer, {
+                        infoTemplate: infoTemplate,
+                        id: layerId
+                    });
+                    //associate the feature with the popup on click to enable highlight and zoom to
+                    featureLayer.on('click', lang.hitch(this, function (event) {
+                        this.map.infoWindow.setFeatures([event.graphic]);
+                    }));
+                    fullExtent = fullExtent ?
+                            fullExtent.union(featureLayer.fullExtent) : featureLayer.fullExtent;
+                    layers.push(featureLayer);
+                    layerIds.push(layerId);
+                }
+            }));
+            if (layers.length > 0 ) {
+                this.map.addLayers(layers);
+                this.map.setExtent(fullExtent.expand(1.25), true);
+                array.forEach(layers, lang.hitch(this, function (layer) {
+                    this.addLayerToLayerControl(layer, file.name);
+                }));
+                var symbol = layers[0].renderer.symbol;
+                if (!symbol) {
+                    this.changeLayerRenderer(layers[0]);
+                    symbol = layers[0].renderer.symbol;
+                }
+                var patchHTML = this.droppedItems[file.name]._createPatchHTML(null, symbol);
+                this.droppedItems[file.name].setIcon(null, null, patchHTML);
+                this.droppedItems[file.name].setLayerIds(layerIds);
+            } else {
+                this.droppedItems[file.name]._handleErrBack();
+            }
+        },
         shapefileResult: function (file, response) {
             if (response.error) {
                 this.droppedItems[file.name]._handleErrBack();
@@ -458,28 +546,39 @@ define([
             //for an example of how to work with local storage.
             var fullExtent;
             var layers = [];
+            var layerIds = [];
             array.forEach(featureCollection.layers, lang.hitch(this, function (layer) {
                 var infoTemplate = new InfoTemplate('Details', '${*}');
+                var layerId = 'shp_' + file.name + '_' + Math.random();
                 var featureLayer = new FeatureLayer(layer, {
                     infoTemplate: infoTemplate,
-                    id: file.name
+                    id: layerId
                 });
                 //associate the feature with the popup on click to enable highlight and zoom to
                 featureLayer.on('click', lang.hitch(this, function (event) {
                     this.map.infoWindow.setFeatures([event.graphic]);
                 }));
                 //change default symbol if desired. Comment this out and the layer will draw with the default symbology
-                this.changeShapefileRenderer(featureLayer);
+                this.changeLayerRenderer(featureLayer);
                 fullExtent = fullExtent ?
                         fullExtent.union(featureLayer.fullExtent) : featureLayer.fullExtent;
                 layers.push(featureLayer);
+                layerIds.push(layerId);
             }));
-            this.map.addLayers(layers);
-            this.map.setExtent(fullExtent.expand(1.25), true);
-            var patchHTML = this.droppedItems[file.name]._createPatchHTML(null, layers[0].renderer.symbol);
-            this.droppedItems[file.name].setIcon(null, null, patchHTML);
+            if (layers.length > 0) {
+                array.forEach(layers, lang.hitch(this, function (layer) {
+                    this.map.addLayers(layer);
+                    this.addLayerToLayerControl(layer, layer.name);
+                }));
+                this.map.setExtent(fullExtent.expand(1.25), true);
+                var patchHTML = this.droppedItems[file.name]._createPatchHTML(null, layers[0].renderer.symbol);
+                this.droppedItems[file.name].setIcon(null, null, patchHTML);
+                this.droppedItems[file.name].setLayerIds(layerIds);
+            } else {
+                this.droppedItems[file.name]._handleErrBack();
+            }
         },
-        changeShapefileRenderer: function (layer) {
+        changeLayerRenderer: function (layer) {
             //change the default symbol for the feature collection for polygons and points
             var lineColor = new Color(
                     this.layerColors[this.layerCount % this.layerColors.length]);
@@ -575,6 +674,7 @@ define([
                     });
                     featureLayer.__popupInfo = popupInfo;
                     this.map.addLayer(featureLayer);
+                    this.addLayerToLayerControl(featureLayer, filename);
                     this.zoomToData(featureLayer);
                 }),
                 onError: function (error) {
@@ -759,6 +859,19 @@ define([
                 this.map.setExtent(multipoint.getExtent().expand(1.25), true);
             }
         },
+        addLayerToLayerControl: function (layer, filename) {
+            var layerControlInfo = {
+                controlOptions: {
+                    expanded: false,
+                    metadataUrl: false,
+                    swipe: false
+                },
+                layer: layer,
+                title: filename,
+                type: 'feature'
+           };
+           topic.publish('layerControl/addLayerControls', [layerControlInfo]);
+        },
         removeDroppedItem: function (itemId) {
             if (this.droppedItems.hasOwnProperty(itemId) &&
                     this.droppedItems[itemId].hasOwnProperty('graphic') &&
@@ -770,10 +883,17 @@ define([
             // maybe it's a layer
             var layerIds = this.map.graphicsLayerIds.slice(0);
             layerIds = layerIds.concat(this.map.layerIds.slice(1));
+            var itemLayerIds = this.droppedItems[itemId].getLayerIds();
             array.forEach(layerIds, lang.hitch(this, function (layerId) {
-                if (layerId === itemId) {
-                    this.map.removeLayer(this.map.getLayer(layerId));
-                    delete this.droppedItems[itemId];
+                if (layerId === itemId || array.indexOf(itemLayerIds, layerId) > -1)  {
+                    var layer = this.map.getLayer(layerId);
+                    if (layer) {
+                        this.map.removeLayer(layer);
+                        topic.publish('layerControl/removeLayerControls', [layer]);
+                        if (this.droppedItems[itemId]) {
+                            delete this.droppedItems[itemId];
+                        }
+                    }
                 }
             }));
             // maybe it's erroneously still on the dropped items object
