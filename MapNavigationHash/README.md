@@ -6,11 +6,11 @@ Uses dojo/router to enable zooming to next or previous extent using the browser 
 
 #### CMV Configuration
 Include the following code in js/config/viewer.js:
-```json
+```javascript
 navhash: {
   include: true,
   id: 'navhash',
-  type: 'floating',
+  type: 'invisible',
   path: 'viewer/dijit/MapNavigationHash/MapNavigationHash',
   title: 'Map Navigation Hash',
   options: {

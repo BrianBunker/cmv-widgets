@@ -5,6 +5,7 @@ define([
     'dojo/_base/declare',
     'dojo/_base/lang',
     'dojo/_base/array',
+    'dojo/topic',
 
     'put-selector',
 
@@ -20,7 +21,8 @@ define([
     'esri/graphic',
     'esri/units',
     'esri/request',
-
+    'esri/SpatialReference',
+    
     'esri/layers/FeatureLayer',
 
     'esri/tasks/query',
@@ -69,11 +71,12 @@ define([
     'dojo/NodeList-dom'
 ], function(
     require,
-    declare, lang, array,
+    declare, lang, array, topic,
     put,
     _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin,
     _SelectionLayersMixin,
     esriConfig, Graphic, Units, request,
+    SpatialReference,
     FeatureLayer,
     QueryTask, GeometryService, DistanceParameters,
     Draw,
@@ -197,9 +200,17 @@ define([
                 this.featureSelectionLayer.clearSelection();
             }
         },
+        
+        disconnectMapClick: function () {
+            topic.publish('mapClickMode/setCurrent', 'draw');
+        },
+        
+        connectMapClick: function () {
+            topic.publish('mapClickMode/setDefault');
+        },
 
         activateMapPointDrop: function(evt) {
-            this.mapClickMode.current = 'draw';
+            this.disconnectMapClick();
             this.clearResults();
             this.dropPointButton.set('label', 'Waiting for point drop');
             this.dropPointButton.set('disabled', true);
@@ -207,7 +218,7 @@ define([
         },
 
         handleDrawEnd: function(evt) {
-            this.mapClickMode.current = this.mapClickMode.defaultMode;
+            this.connectMapClick();
             this.droppedPoint = evt;
             this.drawTool.deactivate();
             this.showPoint(this.droppedPoint.geometry);
@@ -309,13 +320,32 @@ define([
                     callbackParamName: 'callback'
                 }).then(lang.hitch(this, function(result) {
                     this.drivetimeUI(false);
-                    this.nearbyArea = new Polygon(result.saPolygons.features[0].geometry);
-                    this.selectNearbyFeatures();
+                    // project the drive time polygon if it is in a different coordinate system
+                    if (result.saPolygons.spatialReference.wkid === this.map.spatialReference.wkid) {
+                        this.nearbyArea = new Polygon(result.saPolygons.features[0].geometry);
+                        this.selectNearbyFeatures();
+                    } else {
+                        this.projectDriveTimePolygon(result.saPolygons.features[0].geometry, result.saPolygons.spatialReference);
+                    }
                 }), lang.hitch(this, function(err) {
                     this.drivetimeUI(false);
                     this.nearbyResultsNode.innerHTML = 'Sorry, couldn\'t get drive time area. Try a shorter time or a location near a road. If the problem persists, the service might be down temporarily.';
                 }));
             }
+        },
+        
+        // project the drive time polygon to handle the custom spatial reference used for the map
+        projectDriveTimePolygon: function (polygonGeometry, inSR) {
+            var outSR = new SpatialReference(this.map.spatialReference.wkid);
+            var polygon = new Polygon(inSR);
+            polygon.rings = polygonGeometry.rings;
+
+            this.geometryService.project([polygon], outSR).then(lang.hitch(this, function (projectedPolygons) {
+                this.nearbyArea = projectedPolygons[0];
+                this.selectNearbyFeatures();
+            }), lang.hitch(this, function (err) {
+                this.nearbyResultsNode.innerHTML = 'Error occurred while projecting the drive time polygon';
+            }));
         },
 
         drivetimeUI: function(on) {
