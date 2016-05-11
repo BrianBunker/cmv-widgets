@@ -21,7 +21,8 @@ define([
     'esri/graphic',
     'esri/units',
     'esri/request',
-
+    'esri/SpatialReference',
+    
     'esri/layers/FeatureLayer',
 
     'esri/tasks/query',
@@ -75,6 +76,7 @@ define([
     _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin,
     _SelectionLayersMixin,
     esriConfig, Graphic, Units, request,
+    SpatialReference,
     FeatureLayer,
     QueryTask, GeometryService, DistanceParameters,
     Draw,
@@ -318,13 +320,32 @@ define([
                     callbackParamName: 'callback'
                 }).then(lang.hitch(this, function(result) {
                     this.drivetimeUI(false);
-                    this.nearbyArea = new Polygon(result.saPolygons.features[0].geometry);
-                    this.selectNearbyFeatures();
+                    // project the drive time polygon if it is in a different coordinate system
+                    if (result.saPolygons.spatialReference.wkid === this.map.spatialReference.wkid) {
+                        this.nearbyArea = new Polygon(result.saPolygons.features[0].geometry);
+                        this.selectNearbyFeatures();
+                    } else {
+                        this.projectDriveTimePolygon(result.saPolygons.features[0].geometry, result.saPolygons.spatialReference);
+                    }
                 }), lang.hitch(this, function(err) {
                     this.drivetimeUI(false);
                     this.nearbyResultsNode.innerHTML = 'Sorry, couldn\'t get drive time area. Try a shorter time or a location near a road. If the problem persists, the service might be down temporarily.';
                 }));
             }
+        },
+        
+        // project the drive time polygon to handle the custom spatial reference used for the map
+        projectDriveTimePolygon: function (polygonGeometry, inSR) {
+            var outSR = new SpatialReference(this.map.spatialReference.wkid);
+            var polygon = new Polygon(inSR);
+            polygon.rings = polygonGeometry.rings;
+
+            this.geometryService.project([polygon], outSR).then(lang.hitch(this, function (projectedPolygons) {
+                this.nearbyArea = projectedPolygons[0];
+                this.selectNearbyFeatures();
+            }), lang.hitch(this, function (err) {
+                this.nearbyResultsNode.innerHTML = 'Error occurred while projecting the drive time polygon';
+            }));
         },
 
         drivetimeUI: function(on) {
