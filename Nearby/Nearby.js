@@ -93,6 +93,7 @@ define([
         widgetsInTemplate: true,
         templateString: template,
         baseClass: 'gis_NearbyDijit',
+        isMapSRProjected: false,
 
         postCreate: function() {
             this.inherited(arguments);
@@ -300,7 +301,7 @@ define([
                 // what is the distance radius value?
                 this.nearbyArea = new Circle({
                     center: this.pointGraphic.geometry,
-                    geodesic: true,
+                    geodesic: (this.isMapSRProjected) ? false : true,
                     radius: this.nearbyValueInput.get('value'),
                     radiusUnit: Units[this.nearbyModeDistance_options.get('value')]
                 });
