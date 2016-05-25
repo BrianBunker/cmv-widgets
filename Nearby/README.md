@@ -14,7 +14,8 @@ nearby: {
   open: false,
   options: {
     map: true,
-    mapClickMode: true
+    mapClickMode: true,
+    isMapSRProjected: true //if the map's coordinate system is projected, set it to true; default is false
   }
 }
 ```

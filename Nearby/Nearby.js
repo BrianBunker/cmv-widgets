@@ -93,6 +93,7 @@ define([
         widgetsInTemplate: true,
         templateString: template,
         baseClass: 'gis_NearbyDijit',
+        isMapSRProjected: false,
 
         postCreate: function() {
             this.inherited(arguments);
@@ -120,10 +121,13 @@ define([
                 if (i !== 0) {
                     if (this.map.getLayer(layerId).layerInfos && this.map.getLayer(layerId).layerInfos.length > 0) {
                         array.forEach(this.map.getLayer(layerId).layerInfos, lang.hitch(this, function(layerInfo, j) {
-                            options.unshift({
-                                value: layerId + ':' + j,
-                                label: layerInfo.name
-                            });
+                            // check to exclude the group layers as they do not contain features
+                            if (!layerInfo.subLayerIds) {
+                                options.unshift({
+                                    value: layerId + ':' + j,
+                                    label: layerInfo.name
+                                });
+                            }
                         }));
                     } else if (this.map.getLayer(layerId).name) {
                         options.unshift({
@@ -300,7 +304,7 @@ define([
                 // what is the distance radius value?
                 this.nearbyArea = new Circle({
                     center: this.pointGraphic.geometry,
-                    geodesic: true,
+                    geodesic: (this.isMapSRProjected) ? false : true,
                     radius: this.nearbyValueInput.get('value'),
                     radiusUnit: Units[this.nearbyModeDistance_options.get('value')]
                 });
