@@ -580,10 +580,10 @@ define([
         },
         changeLayerRenderer: function (layer) {
             //change the default symbol for the feature collection for polygons and points
-            var lineColor = new Color(
-                    this.layerColors[this.layerCount % this.layerColors.length]);
-            var fillColor = new Color(
-                    this.layerColors[this.layerCount % this.layerColors.length].push(0.25));
+            var color = lang.clone(this.layerColors[this.layerCount % this.layerColors.length]);
+            var lineColor = new Color(color);
+            color.push(0.25);
+            var fillColor = new Color(color);
             var symbol = null;
             switch (layer.geometryType) {
                 case 'esriGeometryPoint':
