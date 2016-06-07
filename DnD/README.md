@@ -30,7 +30,10 @@ Available drag-and-drop sources:
 Note: doesn't currently support DnD of FeatureServer root directory text (http://sampleserver6.arcgisonline.com/arcgis/rest/services/Military/FeatureServer).
 
 
-[Click for demo](http://brianbunker.github.com/dojo-esri-dnd-widget)
+[Click for demo](http://brianbunker.github.io/cmv-widgets/)
+
+**NOTE**: A proxy page may be required for some files like KML due to the arcgis.com conversion service used.
+A proxy is not available for the Github demo.
 
 [Download demo csv, kml, shapefiles, and image](./sampledata)
 
