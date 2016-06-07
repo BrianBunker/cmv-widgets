@@ -566,11 +566,11 @@ define([
                 layerIds.push(layerId);
             }));
             if (layers.length > 0) {
+                this.map.addLayers(layers);
+                this.map.setExtent(fullExtent.expand(1.25), true);
                 array.forEach(layers, lang.hitch(this, function (layer) {
-                    this.map.addLayers(layer);
                     this.addLayerToLayerControl(layer, layer.name);
                 }));
-                this.map.setExtent(fullExtent.expand(1.25), true);
                 var patchHTML = this.droppedItems[file.name]._createPatchHTML(null, layers[0].renderer.symbol);
                 this.droppedItems[file.name].setIcon(null, null, patchHTML);
                 this.droppedItems[file.name].setLayerIds(layerIds);
@@ -580,10 +580,10 @@ define([
         },
         changeLayerRenderer: function (layer) {
             //change the default symbol for the feature collection for polygons and points
-            var lineColor = new Color(
-                    this.layerColors[this.layerCount % this.layerColors.length]);
-            var fillColor = new Color(
-                    this.layerColors[this.layerCount % this.layerColors.length].push(0.25));
+            var color = lang.clone(this.layerColors[this.layerCount % this.layerColors.length]);
+            var lineColor = new Color(color);
+            color.push(0.25);
+            var fillColor = new Color(color);
             var symbol = null;
             switch (layer.geometryType) {
                 case 'esriGeometryPoint':
