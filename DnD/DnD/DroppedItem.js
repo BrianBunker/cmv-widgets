@@ -13,6 +13,7 @@ define([
     'dojo/_base/array',
     'dojo/_base/declare',
     'dojo/_base/lang',
+    'dojo/topic',
 
     'dojo/on',
 
@@ -31,7 +32,7 @@ define([
     esriRequest,
     Extent,
     symbolJsonUtils, SimpleFillSymbol, SimpleLineSymbol, SimpleMarkerSymbol,
-    array, declare, lang,
+    array, declare, lang, topic,
     on,
     _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin,
     gfx,
@@ -149,6 +150,10 @@ define([
                     serviceLayerHTML += '</div>';
                     this.containerNode.innerHTML = serviceLayerHTML;
                 }
+                if (this.layerType) {
+                    this._addLayerToLayerControl(this.layer, this.label, this.layerType);
+                }
+
             } else if (targetNode !== undefined) {
                 put(targetNode, 'div.layerTitle', info.name);
                 var outHTML = '<div>';
@@ -212,6 +217,19 @@ define([
                     return new SimpleMarkerSymbol(layerInfo.symbol);
                 }
             }
+        },
+        _addLayerToLayerControl: function (layer, title, type) {
+            var layerControlInfo = {
+                controlOptions: {
+                    expanded: false,
+                    metadataUrl: false,
+                    swipe: false
+                },
+                layer: layer,
+                title: title,
+                type: type
+            };
+            topic.publish('layerControl/addLayerControls', [layerControlInfo]);
         }
     });
 });

@@ -294,11 +294,12 @@ define([
 
                     // set up layer add listener
                     this.layerAddListeners[url] = on(this.map, 'layer-add-result', lang.hitch(this, 'dndLayerAddComplete', url));
-                    var serviceType = '',
+                    var serviceType = '', layerType = null,
                             layer = null;
                     if (url.match(/MapServer\/?$/i)) {
                         // ArcGIS Server Map Service?
                         serviceType = 'MapServer';
+                        layerType = 'dynamic';
                         layer = this.handleMapServer(url);
                     } else if (url.match(/(Map|Feature)Server\/\d+\/?$/i)) {
                         // ArcGIS Server Map/Feature Service Layer?
@@ -307,14 +308,17 @@ define([
                         } else {
                             serviceType = 'FeatureServer Layer';
                         }
+                        layerType = 'feature';
                         layer = this.handleFeatureLayer(url);
                     } else if (url.match(/ImageServer\/?$/i)) {
                         // ArcGIS Server Image Service?
                         serviceType = 'ImageServer';
+                        layerType = 'image';
                         layer = this.handleImageService(url);
                     } else if (url.match(/FeatureServer\/?$/i)) {
                         this.layerAddListeners[url].remove();
                         serviceType = 'FeatureServer';
+                        layerType = 'feature';
                     }
 
                     // create an entry in the DnD widget UI
@@ -324,6 +328,7 @@ define([
                         itemId: url,
                         url: url,
                         serviceType: serviceType,
+                        layerType: layerType,
                         removeCallback: lang.hitch(this, 'removeDroppedItem')
                     }).placeAt(this.containerNode);
                     this.droppedItems[url].startup();
@@ -375,7 +380,6 @@ define([
                 id: url
             });
             this.map.addLayer(layer);
-            this.addLayerToLayerControl(layer, url);
             return layer;
         },
         handleFeatureLayer: function (url) {
@@ -386,7 +390,6 @@ define([
                 id: url
             });
             this.map.addLayer(layer);
-            this.addLayerToLayerControl(layer, url);
             return layer;
         },
         handleImageService: function (url) {
@@ -395,7 +398,6 @@ define([
                 id: url
             });
             this.map.addLayer(layer);
-            this.addLayerToLayerControl(layer, url);
             return layer;
         },
         handleCSV: function (file) {
