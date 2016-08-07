@@ -377,7 +377,7 @@ define([
         handleMapServer: function (url) {
             var layer = new ArcGISDynamicMapServiceLayer(url, {
                 opacity: 0.75,
-                id: 'DynamicMapService_' + Math.random()
+                id: this.createLayerID('DynamicMapService')
             });
             this.map.addLayer(layer);
             return layer;
@@ -387,7 +387,7 @@ define([
                 opacity: 0.75,
                 mode: FeatureLayer.MODE_ONDEMAND,
                 infoTemplate: new InfoTemplate(null, '${*}'),
-                id: 'FeatureLayer_' + Math.random()
+                id: this.createLayerID('FeatureLayer')
             });
             this.map.addLayer(layer);
             return layer;
@@ -395,7 +395,7 @@ define([
         handleImageService: function (url) {
             var layer = new ArcGISImageServiceLayer(url, {
                 opacity: 0.75,
-                id: 'ImageService_' + Math.random()
+                id: this.createLayerID('ImageService')
             });
             this.map.addLayer(layer);
             return layer;
@@ -498,7 +498,7 @@ define([
                 var featureSet = layer.featureSet;
                 if (featureSet && featureSet.features && featureSet.features.length > 0) {
                     var infoTemplate = new PopupTemplate(layer.popupInfo);
-                    var layerId = 'kml_' + file.name + '_' + Math.random();
+                    var layerId = this.createLayerID('kml-' + file.name);
                     var featureLayer = new FeatureLayer(layer, {
                         infoTemplate: infoTemplate,
                         id: layerId
@@ -551,7 +551,7 @@ define([
             var layerIds = [];
             array.forEach(featureCollection.layers, lang.hitch(this, function (layer) {
                 var infoTemplate = new InfoTemplate('Details', '${*}');
-                var layerId = 'shp_' + file.name + '_' + Math.random();
+                var layerId = this.createLayerID('shp-' + file.name);
                 var featureLayer = new FeatureLayer(layer, {
                     infoTemplate: infoTemplate,
                     id: layerId
@@ -672,7 +672,7 @@ define([
                     }));
                     var featureLayer = new FeatureLayer(featureCollection, {
                         infoTemplate: infoTemplate,
-                        id: 'csv_' + filename + '_' + Math.random()
+                        id: this.createLayerID('csv-' + filename)
                     });
                     featureLayer.__popupInfo = popupInfo;
                     this.map.addLayer(featureLayer);
@@ -873,6 +873,10 @@ define([
                 type: 'feature'
            };
            topic.publish('layerControl/addLayerControls', [layerControlInfo]);
+        },
+        createLayerID: function (name) {
+            var rnd = String(Math.random());
+            return name + '-' + rnd.replace('.', '');
         },
         removeDroppedItem: function (itemId) {
             if (this.droppedItems.hasOwnProperty(itemId) &&
