@@ -377,7 +377,7 @@ define([
         handleMapServer: function (url) {
             var layer = new ArcGISDynamicMapServiceLayer(url, {
                 opacity: 0.75,
-                id: url
+                id: 'DynamicMapService_' + Math.random()
             });
             this.map.addLayer(layer);
             return layer;
@@ -387,7 +387,7 @@ define([
                 opacity: 0.75,
                 mode: FeatureLayer.MODE_ONDEMAND,
                 infoTemplate: new InfoTemplate(null, '${*}'),
-                id: url
+                id: 'FeatureLayer_' + Math.random()
             });
             this.map.addLayer(layer);
             return layer;
@@ -395,7 +395,7 @@ define([
         handleImageService: function (url) {
             var layer = new ArcGISImageServiceLayer(url, {
                 opacity: 0.75,
-                id: url
+                id: 'ImageService_' + Math.random()
             });
             this.map.addLayer(layer);
             return layer;
@@ -672,7 +672,7 @@ define([
                     }));
                     var featureLayer = new FeatureLayer(featureCollection, {
                         infoTemplate: infoTemplate,
-                        id: filename
+                        id: 'csv_' + filename + '_' + Math.random()
                     });
                     featureLayer.__popupInfo = popupInfo;
                     this.map.addLayer(featureLayer);
