@@ -156,10 +156,12 @@ define([
 
             } else if (targetNode !== undefined) {
                 put(targetNode, 'div.layerTitle', info.name);
-                var outHTML = '<div>';
-                outHTML += '<div class="layersInfo">' + this._buildLayersInfo(this._getRendererSymbolArray(info.drawingInfo.renderer)) + '</div>';
-                outHTML += '</div>';
-                targetNode.innerHTML += outHTML;
+                if (info.drawingInfo && info.drawingInfo.renderer) {
+                    var outHTML = '<div>';
+                    outHTML += '<div class="layersInfo">' + this._buildLayersInfo(this._getRendererSymbolArray(info.drawingInfo.renderer)) + '</div>';
+                    outHTML += '</div>';
+                    targetNode.innerHTML += outHTML;
+                }
             }
         },
         _getRendererSymbolArray: function (rendererJson) {
