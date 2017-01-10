@@ -99,7 +99,7 @@ define([
     }, {
         id: 'mgrs',
         label: 'US National Grid/MGRS',
-        default: '15TVK',
+        //default: '15TVK',
         examples: ['4QFJ123456', '14SMF6373224867', '10UFD30'],
         helpText: 'The input accepts a grid zone designator (4Q), grid square id (FJ), and an even number of additional precision numbers (12345678). See <a href="http://en.wikipedia.org/wiki/Military_grid_reference_system" target="_blank">wikipedia entry</a> for additional info.',
         toLatLong: function (inputCoord) {
